@@ -127,4 +127,3 @@ const EmployeeForm = ({ onSubmit, countries = [], defaultValues, darkMode }) => 
 };
 
 export default EmployeeForm;
-

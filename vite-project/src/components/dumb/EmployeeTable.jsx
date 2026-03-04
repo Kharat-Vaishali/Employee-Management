@@ -1,15 +1,19 @@
-
-
-import React from "react";
+import React, { useState, useMemo } from "react";
 import {
   Table,
   TableHead,
   TableRow,
   TableCell,
   TableBody,
-  Button,
   Box,
+  TableSortLabel,
+  TablePagination,
+  IconButton,
+  Tooltip
 } from "@mui/material";
+
+import EditIcon from "@mui/icons-material/Edit";
+import DeleteIcon from "@mui/icons-material/Delete";
 
 const EmployeeTable = ({
   employees = [],
@@ -18,15 +22,60 @@ const EmployeeTable = ({
   onEdit,
   onDelete,
 }) => {
- 
+
+  const [order, setOrder] = useState("asc");
+  const [orderBy, setOrderBy] = useState("name");
+
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(5);
+
+  // Sorting
+  const handleSort = (property) => {
+    const isAsc = orderBy === property && order === "asc";
+    setOrder(isAsc ? "desc" : "asc");
+    setOrderBy(property);
+  };
+
+  // Pagination
+  const handleChangePage = (event, newPage) => {
+    setPage(newPage);
+  };
+
+  const handleChangeRowsPerPage = (event) => {
+    setRowsPerPage(parseInt(event.target.value, 10));
+    setPage(0);
+  };
+
+  // Sort employees
+  const sortedEmployees = useMemo(() => {
+    return [...employees].sort((a, b) => {
+
+      const aValue = a[orderBy] || "";
+      const bValue = b[orderBy] || "";
+
+      if (order === "asc") {
+        return String(aValue).localeCompare(String(bValue));
+      }
+
+      return String(bValue).localeCompare(String(aValue));
+
+    });
+  }, [employees, order, orderBy]);
+
+  // Pagination logic
+  const paginatedEmployees = useMemo(() => {
+    const start = page * rowsPerPage;
+    return sortedEmployees.slice(start, start + rowsPerPage);
+  }, [sortedEmployees, page, rowsPerPage]);
+
+  // Highlight search text
   const highlightText = (value) => {
-    
+
     const text =
       value !== undefined && value !== null ? String(value) : "";
 
     if (!searchText) return text;
 
-    // Escape special regex characters
     const safeSearch = searchText.replace(
       /[.*+?^${}()|[\]\\]/g,
       "\\$&"
@@ -59,11 +108,12 @@ const EmployeeTable = ({
     <Box
       sx={{
         overflowX: "auto",
-        borderRadius: 1,
-        boxShadow: 1,
+        borderRadius: 2,
+        boxShadow: 3,
         mt: 2,
       }}
     >
+
       <Table
         sx={{
           minWidth: 650,
@@ -74,57 +124,148 @@ const EmployeeTable = ({
           },
         }}
       >
-        <TableHead sx={{ backgroundColor: darkMode ? "#333" : "#ddd" }}>
+
+        <TableHead
+          sx={{
+            backgroundColor: darkMode ? "#333" : "#ddd",
+          }}
+        >
+
           <TableRow>
-            <TableCell>ID</TableCell>
-            <TableCell>Name</TableCell>
+
+            <TableCell>
+
+              <TableSortLabel
+                active={orderBy === "id"}
+                direction={order}
+                onClick={() => handleSort("id")}
+              >
+                ID
+              </TableSortLabel>
+
+            </TableCell>
+
+            <TableCell>
+
+              <TableSortLabel
+                active={orderBy === "name"}
+                direction={order}
+                onClick={() => handleSort("name")}
+              >
+                Name
+              </TableSortLabel>
+
+            </TableCell>
+
             <TableCell>Email</TableCell>
             <TableCell>Mobile</TableCell>
             <TableCell>Country</TableCell>
-            <TableCell>Action</TableCell>
+
+            <TableCell align="center">
+              Actions
+            </TableCell>
+
           </TableRow>
+
         </TableHead>
 
         <TableBody>
-          {employees.length > 0 ? (
-            employees.map((emp) => (
-              <TableRow key={emp?.id}>
-                <TableCell>{highlightText(emp?.id)}</TableCell>
-                <TableCell>{highlightText(emp?.name)}</TableCell>
-                <TableCell>{highlightText(emp?.email)}</TableCell>
-                <TableCell>{highlightText(emp?.mobile)}</TableCell>
-                <TableCell>{highlightText(emp?.country)}</TableCell>
+
+          {paginatedEmployees.length > 0 ? (
+
+            paginatedEmployees.map((emp) => (
+
+              <TableRow
+                key={emp?.id}
+                hover
+                sx={{
+                  transition: "all 0.2s ease",
+                  "&:hover": {
+                    backgroundColor: darkMode
+                      ? "#2a2a2a"
+                      : "#f9f9f9"
+                  }
+                }}
+              >
 
                 <TableCell>
-                  <Button
-                    size="small"
-                    variant="outlined"
-                    onClick={() => onEdit(emp?.id)}
-                    sx={{ mr: 1 }}
-                  >
-                    Edit
-                  </Button>
-
-                  <Button
-                    size="small"
-                    variant="outlined"
-                    color="error"
-                    onClick={() => onDelete(emp?.id)}
-                  >
-                    Delete
-                  </Button>
+                  {highlightText(emp?.id)}
                 </TableCell>
+
+                <TableCell>
+                  {highlightText(emp?.name)}
+                </TableCell>
+
+                <TableCell>
+                  {highlightText(emp?.email)}
+                </TableCell>
+
+                <TableCell>
+                  {highlightText(emp?.mobile)}
+                </TableCell>
+
+                <TableCell>
+                  {highlightText(emp?.country)}
+                </TableCell>
+
+                <TableCell align="center">
+
+                  <Tooltip title="Edit Employee">
+
+                    <IconButton
+                      color="primary"
+                      onClick={() => onEdit(emp?.id)}
+                    >
+                      <EditIcon />
+                    </IconButton>
+
+                  </Tooltip>
+
+                  <Tooltip title="Delete Employee">
+
+                    <IconButton
+                      color="error"
+                      onClick={() => onDelete(emp?.id)}
+                    >
+                      <DeleteIcon />
+                    </IconButton>
+
+                  </Tooltip>
+
+                </TableCell>
+
               </TableRow>
+
             ))
+
           ) : (
+
             <TableRow>
+
               <TableCell colSpan={6} align="center">
                 No Data Found
               </TableCell>
+
             </TableRow>
+
           )}
+
         </TableBody>
+
       </Table>
+
+      {/* Pagination */}
+
+      <TablePagination
+        component="div"
+        count={employees.length}
+        page={page}
+        onPageChange={handleChangePage}
+        rowsPerPage={rowsPerPage}
+        onRowsPerPageChange={handleChangeRowsPerPage}
+        rowsPerPageOptions={[5, 10, 25]}
+      />
+
     </Box>
   );
 };
