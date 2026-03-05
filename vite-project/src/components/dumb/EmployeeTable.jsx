@@ -20,6 +20,7 @@ import DeleteIcon from "@mui/icons-material/Delete";
 const EmployeeTable = ({
   employees = [],
   searchText = "",
+  darkMode = false,
   onEdit,
   onDelete
 }) => {
@@ -45,32 +46,24 @@ const EmployeeTable = ({
     setOrderBy(property);
   };
 
-  /* ===== SORTING LOGIC ===== */
-
   const sortedEmployees = useMemo(() => {
 
-    const sorted = [...employees].sort((a, b) => {
+    return [...employees].sort((a, b) => {
 
       const aValue = a[orderBy];
       const bValue = b[orderBy];
 
-      // Numeric sorting (ID, Mobile)
       if (orderBy === "id" || orderBy === "mobile") {
-
         return order === "asc"
           ? Number(aValue) - Number(bValue)
           : Number(bValue) - Number(aValue);
-
       }
 
-      // String sorting (Name, Email, Country)
       return order === "asc"
         ? String(aValue).localeCompare(String(bValue))
         : String(bValue).localeCompare(String(aValue));
 
     });
-
-    return sorted;
 
   }, [employees, order, orderBy]);
 
@@ -78,8 +71,6 @@ const EmployeeTable = ({
     page * rowsPerPage,
     page * rowsPerPage + rowsPerPage
   );
-
-  /* ===== SEARCH HIGHLIGHT ===== */
 
   const highlightText = (value) => {
 
@@ -118,16 +109,18 @@ const EmployeeTable = ({
         borderRadius: 4,
         mt: 3,
         overflow: "hidden",
-        background: "linear-gradient(145deg,#ffffff,#f0f7ff)",
-        transition: "0.3s",
-        "&:hover": {
-          boxShadow: 16
-        }
+        background: darkMode
+          ? "#1e1e1e"
+          : "linear-gradient(145deg,#ffffff,#f0f7ff)"
       }}
     >
 
       <Box sx={{ p: 2 }}>
-        <Typography variant="h6" fontWeight="bold">
+        <Typography
+          variant="h6"
+          fontWeight="bold"
+          color={darkMode ? "#fff" : "#000"}
+        >
           Employee List
         </Typography>
       </Box>
@@ -136,64 +129,37 @@ const EmployeeTable = ({
 
         <TableHead
           sx={{
-            background:
-              "linear-gradient(90deg,#1976d2,#42a5f5)"
+            background: darkMode
+              ? "#333"
+              : "linear-gradient(90deg,#1976d2,#42a5f5)"
           }}
         >
 
           <TableRow>
 
-            <TableCell sx={{ color: "#fff", fontWeight: "bold" }}>
-              <TableSortLabel
-                active={orderBy === "id"}
-                direction={order}
-                onClick={() => handleSort("id")}
-              >
-                ID
-              </TableSortLabel>
-            </TableCell>
+            {["id","name","email","mobile","country"].map((col) => (
 
-            <TableCell sx={{ color: "#fff", fontWeight: "bold" }}>
-              <TableSortLabel
-                active={orderBy === "name"}
-                direction={order}
-                onClick={() => handleSort("name")}
+              <TableCell
+                key={col}
+                sx={{
+                  color: "#fff",
+                  fontWeight: "bold"
+                }}
               >
-                Name
-              </TableSortLabel>
-            </TableCell>
 
-            <TableCell sx={{ color: "#fff", fontWeight: "bold" }}>
-              <TableSortLabel
-                active={orderBy === "email"}
-                direction={order}
-                onClick={() => handleSort("email")}
-              >
-                Email
-              </TableSortLabel>
-            </TableCell>
+                <TableSortLabel
+                  active={orderBy === col}
+                  direction={order}
+                  onClick={() => handleSort(col)}
+                >
+                  {col.toUpperCase()}
+                </TableSortLabel>
 
-            <TableCell sx={{ color: "#fff", fontWeight: "bold" }}>
-              <TableSortLabel
-                active={orderBy === "mobile"}
-                direction={order}
-                onClick={() => handleSort("mobile")}
-              >
-                Mobile
-              </TableSortLabel>
-            </TableCell>
+              </TableCell>
 
-            <TableCell sx={{ color: "#fff", fontWeight: "bold" }}>
-              <TableSortLabel
-                active={orderBy === "country"}
-                direction={order}
-                onClick={() => handleSort("country")}
-              >
-                Country
-              </TableSortLabel>
-            </TableCell>
+            ))}
 
-            <TableCell sx={{ color: "#fff", fontWeight: "bold" }}>
+            <TableCell sx={{ color:"#fff", fontWeight:"bold" }}>
               Actions
             </TableCell>
 
@@ -211,40 +177,30 @@ const EmployeeTable = ({
                 key={emp.id}
                 hover
                 sx={{
-                  transition: "0.25s",
+                  backgroundColor: darkMode ? "#1e1e1e" : "#fff",
+                  "& td": {
+                    color: darkMode ? "#fff" : "#000"
+                  },
                   "&:hover": {
-                    backgroundColor: "#f1f7ff",
-                    transform: "scale(1.01)"
+                    backgroundColor: darkMode
+                      ? "#2a2a2a"
+                      : "#f1f7ff"
                   }
                 }}
               >
 
                 <TableCell>{highlightText(emp.id)}</TableCell>
-
-                <TableCell sx={{ fontWeight: 500 }}>
-                  {highlightText(emp.name)}
-                </TableCell>
-
-                <TableCell>
-                  {highlightText(emp.email)}
-                </TableCell>
-
+                <TableCell>{highlightText(emp.name)}</TableCell>
+                <TableCell>{highlightText(emp.email)}</TableCell>
                 <TableCell>{emp.mobile}</TableCell>
-
                 <TableCell>{emp.country}</TableCell>
 
                 <TableCell>
 
-                  <Tooltip title="Edit Employee">
+                  <Tooltip title="Edit">
 
                     <IconButton
                       color="primary"
-                      sx={{
-                        transition: "0.2s",
-                        "&:hover": {
-                          transform: "scale(1.2)"
-                        }
-                      }}
                       onClick={() => onEdit(emp.id)}
                     >
                       <EditIcon />
@@ -252,16 +208,10 @@ const EmployeeTable = ({
 
                   </Tooltip>
 
-                  <Tooltip title="Delete Employee">
+                  <Tooltip title="Delete">
 
                     <IconButton
                       color="error"
-                      sx={{
-                        transition: "0.2s",
-                        "&:hover": {
-                          transform: "scale(1.2)"
-                        }
-                      }}
                       onClick={() => onDelete(emp.id)}
                     >
                       <DeleteIcon />
@@ -281,7 +231,7 @@ const EmployeeTable = ({
 
               <TableCell colSpan={6} align="center">
 
-                <Typography sx={{ py: 3 }}>
+                <Typography color={darkMode ? "#fff" : "#000"}>
                   No Employees Found
                 </Typography>
 
@@ -303,6 +253,9 @@ const EmployeeTable = ({
         onPageChange={handleChangePage}
         rowsPerPageOptions={[5,10,25]}
         onRowsPerPageChange={handleRowsPerPage}
+        sx={{
+          color: darkMode ? "#fff" : "#000"
+        }}
       />
 
     </Paper>
