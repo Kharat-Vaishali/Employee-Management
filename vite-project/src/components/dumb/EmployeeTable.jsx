@@ -5,11 +5,13 @@ import {
   TableRow,
   TableCell,
   TableBody,
-  Box,
-  TableSortLabel,
   TablePagination,
   IconButton,
-  Tooltip
+  Tooltip,
+  Paper,
+  Box,
+  Typography,
+  TableSortLabel
 } from "@mui/material";
 
 import EditIcon from "@mui/icons-material/Edit";
@@ -18,70 +20,74 @@ import DeleteIcon from "@mui/icons-material/Delete";
 const EmployeeTable = ({
   employees = [],
   searchText = "",
-  darkMode,
   onEdit,
-  onDelete,
+  onDelete
 }) => {
-
-  const [order, setOrder] = useState("asc");
-  const [orderBy, setOrderBy] = useState("name");
 
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
 
-  // Sorting
+  const [order, setOrder] = useState("asc");
+  const [orderBy, setOrderBy] = useState("id");
+
+  const handleChangePage = (event, newPage) => {
+    setPage(newPage);
+  };
+
+  const handleRowsPerPage = (event) => {
+    setRowsPerPage(parseInt(event.target.value, 10));
+    setPage(0);
+  };
+
   const handleSort = (property) => {
     const isAsc = orderBy === property && order === "asc";
     setOrder(isAsc ? "desc" : "asc");
     setOrderBy(property);
   };
 
-  // Pagination
-  const handleChangePage = (event, newPage) => {
-    setPage(newPage);
-  };
+  /* ===== SORTING LOGIC ===== */
 
-  const handleChangeRowsPerPage = (event) => {
-    setRowsPerPage(parseInt(event.target.value, 10));
-    setPage(0);
-  };
-
-  // Sort employees
   const sortedEmployees = useMemo(() => {
-    return [...employees].sort((a, b) => {
 
-      const aValue = a[orderBy] || "";
-      const bValue = b[orderBy] || "";
+    const sorted = [...employees].sort((a, b) => {
 
-      if (order === "asc") {
-        return String(aValue).localeCompare(String(bValue));
+      const aValue = a[orderBy];
+      const bValue = b[orderBy];
+
+      // Numeric sorting (ID, Mobile)
+      if (orderBy === "id" || orderBy === "mobile") {
+
+        return order === "asc"
+          ? Number(aValue) - Number(bValue)
+          : Number(bValue) - Number(aValue);
+
       }
 
-      return String(bValue).localeCompare(String(aValue));
+      // String sorting (Name, Email, Country)
+      return order === "asc"
+        ? String(aValue).localeCompare(String(bValue))
+        : String(bValue).localeCompare(String(aValue));
 
     });
+
+    return sorted;
+
   }, [employees, order, orderBy]);
 
-  // Pagination logic
-  const paginatedEmployees = useMemo(() => {
-    const start = page * rowsPerPage;
-    return sortedEmployees.slice(start, start + rowsPerPage);
-  }, [sortedEmployees, page, rowsPerPage]);
+  const paginated = sortedEmployees.slice(
+    page * rowsPerPage,
+    page * rowsPerPage + rowsPerPage
+  );
 
-  // Highlight search text
+  /* ===== SEARCH HIGHLIGHT ===== */
+
   const highlightText = (value) => {
 
-    const text =
-      value !== undefined && value !== null ? String(value) : "";
+    const text = value ? String(value) : "";
 
     if (!searchText) return text;
 
-    const safeSearch = searchText.replace(
-      /[.*+?^${}()|[\]\\]/g,
-      "\\$&"
-    );
-
-    const regex = new RegExp(`(${safeSearch})`, "gi");
+    const regex = new RegExp(`(${searchText})`, "gi");
 
     const parts = text.split(regex);
 
@@ -90,10 +96,10 @@ const EmployeeTable = ({
         <span
           key={index}
           style={{
-            backgroundColor: "yellow",
-            color: "black",
+            backgroundColor: "#ffe082",
             padding: "2px 4px",
             borderRadius: "4px",
+            fontWeight: "bold"
           }}
         >
           {part}
@@ -105,36 +111,39 @@ const EmployeeTable = ({
   };
 
   return (
-    <Box
+
+    <Paper
+      elevation={10}
       sx={{
-        overflowX: "auto",
-        borderRadius: 2,
-        boxShadow: 3,
-        mt: 2,
+        borderRadius: 4,
+        mt: 3,
+        overflow: "hidden",
+        background: "linear-gradient(145deg,#ffffff,#f0f7ff)",
+        transition: "0.3s",
+        "&:hover": {
+          boxShadow: 16
+        }
       }}
     >
 
-      <Table
-        sx={{
-          minWidth: 650,
-          backgroundColor: darkMode ? "#1e1e1e" : "#fff",
-          "& th, & td": {
-            color: darkMode ? "#fff" : "#000",
-            whiteSpace: "nowrap",
-          },
-        }}
-      >
+      <Box sx={{ p: 2 }}>
+        <Typography variant="h6" fontWeight="bold">
+          Employee List
+        </Typography>
+      </Box>
+
+      <Table>
 
         <TableHead
           sx={{
-            backgroundColor: darkMode ? "#333" : "#ddd",
+            background:
+              "linear-gradient(90deg,#1976d2,#42a5f5)"
           }}
         >
 
           <TableRow>
 
-            <TableCell>
-
+            <TableCell sx={{ color: "#fff", fontWeight: "bold" }}>
               <TableSortLabel
                 active={orderBy === "id"}
                 direction={order}
@@ -142,11 +151,9 @@ const EmployeeTable = ({
               >
                 ID
               </TableSortLabel>
-
             </TableCell>
 
-            <TableCell>
-
+            <TableCell sx={{ color: "#fff", fontWeight: "bold" }}>
               <TableSortLabel
                 active={orderBy === "name"}
                 direction={order}
@@ -154,14 +161,39 @@ const EmployeeTable = ({
               >
                 Name
               </TableSortLabel>
-
             </TableCell>
 
-            <TableCell>Email</TableCell>
-            <TableCell>Mobile</TableCell>
-            <TableCell>Country</TableCell>
+            <TableCell sx={{ color: "#fff", fontWeight: "bold" }}>
+              <TableSortLabel
+                active={orderBy === "email"}
+                direction={order}
+                onClick={() => handleSort("email")}
+              >
+                Email
+              </TableSortLabel>
+            </TableCell>
 
-            <TableCell align="center">
+            <TableCell sx={{ color: "#fff", fontWeight: "bold" }}>
+              <TableSortLabel
+                active={orderBy === "mobile"}
+                direction={order}
+                onClick={() => handleSort("mobile")}
+              >
+                Mobile
+              </TableSortLabel>
+            </TableCell>
+
+            <TableCell sx={{ color: "#fff", fontWeight: "bold" }}>
+              <TableSortLabel
+                active={orderBy === "country"}
+                direction={order}
+                onClick={() => handleSort("country")}
+              >
+                Country
+              </TableSortLabel>
+            </TableCell>
+
+            <TableCell sx={{ color: "#fff", fontWeight: "bold" }}>
               Actions
             </TableCell>
 
@@ -171,50 +203,49 @@ const EmployeeTable = ({
 
         <TableBody>
 
-          {paginatedEmployees.length > 0 ? (
+          {paginated.length > 0 ? (
 
-            paginatedEmployees.map((emp) => (
+            paginated.map((emp) => (
 
               <TableRow
-                key={emp?.id}
+                key={emp.id}
                 hover
                 sx={{
-                  transition: "all 0.2s ease",
+                  transition: "0.25s",
                   "&:hover": {
-                    backgroundColor: darkMode
-                      ? "#2a2a2a"
-                      : "#f9f9f9"
+                    backgroundColor: "#f1f7ff",
+                    transform: "scale(1.01)"
                   }
                 }}
               >
 
-                <TableCell>
-                  {highlightText(emp?.id)}
+                <TableCell>{highlightText(emp.id)}</TableCell>
+
+                <TableCell sx={{ fontWeight: 500 }}>
+                  {highlightText(emp.name)}
                 </TableCell>
 
                 <TableCell>
-                  {highlightText(emp?.name)}
+                  {highlightText(emp.email)}
                 </TableCell>
+
+                <TableCell>{emp.mobile}</TableCell>
+
+                <TableCell>{emp.country}</TableCell>
 
                 <TableCell>
-                  {highlightText(emp?.email)}
-                </TableCell>
-
-                <TableCell>
-                  {highlightText(emp?.mobile)}
-                </TableCell>
-
-                <TableCell>
-                  {highlightText(emp?.country)}
-                </TableCell>
-
-                <TableCell align="center">
 
                   <Tooltip title="Edit Employee">
 
                     <IconButton
                       color="primary"
-                      onClick={() => onEdit(emp?.id)}
+                      sx={{
+                        transition: "0.2s",
+                        "&:hover": {
+                          transform: "scale(1.2)"
+                        }
+                      }}
+                      onClick={() => onEdit(emp.id)}
                     >
                       <EditIcon />
                     </IconButton>
@@ -225,7 +256,13 @@ const EmployeeTable = ({
 
                     <IconButton
                       color="error"
-                      onClick={() => onDelete(emp?.id)}
+                      sx={{
+                        transition: "0.2s",
+                        "&:hover": {
+                          transform: "scale(1.2)"
+                        }
+                      }}
+                      onClick={() => onDelete(emp.id)}
                     >
                       <DeleteIcon />
                     </IconButton>
@@ -243,7 +280,11 @@ const EmployeeTable = ({
             <TableRow>
 
               <TableCell colSpan={6} align="center">
-                No Data Found
+
+                <Typography sx={{ py: 3 }}>
+                  No Employees Found
+                </Typography>
+
               </TableCell>
 
             </TableRow>
@@ -254,19 +295,17 @@ const EmployeeTable = ({
 
       </Table>
 
-      {/* Pagination */}
-
       <TablePagination
         component="div"
         count={employees.length}
         page={page}
-        onPageChange={handleChangePage}
         rowsPerPage={rowsPerPage}
-        onRowsPerPageChange={handleChangeRowsPerPage}
-        rowsPerPageOptions={[5, 10, 25]}
+        onPageChange={handleChangePage}
+        rowsPerPageOptions={[5,10,25]}
+        onRowsPerPageChange={handleRowsPerPage}
       />
 
-    </Box>
+    </Paper>
   );
 };
 

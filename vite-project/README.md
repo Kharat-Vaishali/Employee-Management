@@ -58,7 +58,7 @@ src/
  ├── features/
  │    ├── employees/
  │    │    ├── employeeSlice.js
- │    │    ├── employeeThunks.js
+ │    │    ├── 
  │    │
  │    └── countries/
  │         ├── countrySlice.js
@@ -72,10 +72,9 @@ src/
  │    │    ├── EmployeeTable.jsx
  │    │    ├── EmployeeForm.jsx
  │
- ├── pages/
- │    ├── Home.jsx
+ ├──
  │
- ├── tests/
+ ├── 
  │
  ├── App.jsx
  ├── main.jsx

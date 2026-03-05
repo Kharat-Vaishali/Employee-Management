@@ -1,7 +1,7 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "../../api/axiosInstance";
 
-/* ================= FETCH ALL ================= */
+/* ================= FETCH ALL EMPLOYEES ================= */
 
 export const fetchEmployees = createAsyncThunk(
   "employees/fetchEmployees",
@@ -10,12 +10,14 @@ export const fetchEmployees = createAsyncThunk(
       const response = await axios.get("/employee");
       return response.data;
     } catch (err) {
-      return rejectWithValue(err.response?.data || "Failed to fetch employees");
+      return rejectWithValue(
+        err.response?.data || "Failed to fetch employees"
+      );
     }
   }
 );
 
-/* ================= FETCH BY ID ================= */
+/* ================= FETCH EMPLOYEE BY ID ================= */
 
 export const fetchEmployeeById = createAsyncThunk(
   "employees/fetchEmployeeById",
@@ -23,13 +25,13 @@ export const fetchEmployeeById = createAsyncThunk(
     try {
       const response = await axios.get(`/employee/${id}`);
       return response.data;
-    } catch {
-      return rejectWithValue("Employee not found");
+    } catch (err) {
+      return rejectWithValue("Employee not found",err);
     }
   }
 );
 
-/* ================= ADD ================= */
+/* ================= ADD EMPLOYEE ================= */
 
 export const addEmployee = createAsyncThunk(
   "employees/addEmployee",
@@ -38,12 +40,14 @@ export const addEmployee = createAsyncThunk(
       const response = await axios.post("/employee", data);
       return response.data;
     } catch (err) {
-      return rejectWithValue(err.response?.data || "Add failed");
+      return rejectWithValue(
+        err.response?.data || "Failed to add employee"
+      );
     }
   }
 );
 
-/* ================= UPDATE ================= */
+/* ================= UPDATE EMPLOYEE ================= */
 
 export const updateEmployee = createAsyncThunk(
   "employees/updateEmployee",
@@ -52,12 +56,14 @@ export const updateEmployee = createAsyncThunk(
       const response = await axios.put(`/employee/${id}`, data);
       return response.data;
     } catch (err) {
-      return rejectWithValue(err.response?.data || "Update failed");
+      return rejectWithValue(
+        err.response?.data || "Failed to update employee"
+      );
     }
   }
 );
 
-/* ================= DELETE ================= */
+/* ================= DELETE EMPLOYEE ================= */
 
 export const deleteEmployee = createAsyncThunk(
   "employees/deleteEmployee",
@@ -66,7 +72,9 @@ export const deleteEmployee = createAsyncThunk(
       await axios.delete(`/employee/${id}`);
       return id;
     } catch (err) {
-      return rejectWithValue(err.response?.data || "Delete failed");
+      return rejectWithValue(
+        err.response?.data || "Failed to delete employee"
+      );
     }
   }
 );
@@ -75,6 +83,7 @@ export const deleteEmployee = createAsyncThunk(
 
 const employeeSlice = createSlice({
   name: "employees",
+
   initialState: {
     list: [],
     selected: null,
@@ -82,79 +91,125 @@ const employeeSlice = createSlice({
     error: null,
     success: null,
   },
+
   reducers: {
     clearMessages: (state) => {
       state.error = null;
       state.success = null;
     },
   },
+
   extraReducers: (builder) => {
     builder
 
-      /* ---------- FETCH ALL ---------- */
-      .addCase(fetchEmployees.pending, (s) => {
-        s.loading = true;
-        s.error = null;
-      })
-      .addCase(fetchEmployees.fulfilled, (s, a) => {
-        s.loading = false;
-        s.list = a.payload;
-      })
-      .addCase(fetchEmployees.rejected, (s, a) => {
-        s.loading = false;
-        s.error = a.payload;
+      /* ===== FETCH ALL ===== */
+
+      .addCase(fetchEmployees.pending, (state) => {
+        state.loading = true;
+        state.error = null;
       })
 
-      /* ---------- FETCH BY ID ---------- */
-      .addCase(fetchEmployeeById.fulfilled, (s, a) => {
-        s.selected = a.payload;
-      })
-      .addCase(fetchEmployeeById.rejected, (s, a) => {
-        s.error = a.payload;
+      .addCase(fetchEmployees.fulfilled, (state, action) => {
+        state.loading = false;
+        state.list = action.payload;
       })
 
-      /* ---------- ADD ---------- */
-      .addCase(addEmployee.pending, (s) => {
-        s.loading = true;
-      })
-      .addCase(addEmployee.fulfilled, (s, a) => {
-        s.loading = false;
-        s.list.push(a.payload);
-        s.success = "Employee added successfully";
-      })
-      .addCase(addEmployee.rejected, (s, a) => {
-        s.loading = false;
-        s.error = a.payload;
+      .addCase(fetchEmployees.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
       })
 
-      /* ---------- UPDATE ---------- */
-      .addCase(updateEmployee.fulfilled, (s, a) => {
-        const index = s.list.findIndex(
-          (e) => e.id === a.payload.id
+      /* ===== FETCH BY ID ===== */
+
+      .addCase(fetchEmployeeById.pending, (state) => {
+        state.loading = true;
+      })
+
+      .addCase(fetchEmployeeById.fulfilled, (state, action) => {
+        state.loading = false;
+        state.selected = action.payload;
+      })
+
+      .addCase(fetchEmployeeById.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+
+      /* ===== ADD EMPLOYEE ===== */
+
+      .addCase(addEmployee.pending, (state) => {
+        state.loading = true;
+      })
+
+      .addCase(addEmployee.fulfilled, (state, action) => {
+        state.loading = false;
+
+        const newEmployee = action.payload;
+
+        // Remove duplicate if exists
+        state.list = state.list.filter(
+          (emp) => emp.id !== newEmployee.id
+        );
+
+        // Add new employee at top
+        state.list = [newEmployee, ...state.list];
+
+        state.success = "Employee added successfully";
+      })
+
+      .addCase(addEmployee.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+
+      /* ===== UPDATE EMPLOYEE ===== */
+
+      .addCase(updateEmployee.pending, (state) => {
+        state.loading = true;
+      })
+
+      .addCase(updateEmployee.fulfilled, (state, action) => {
+        state.loading = false;
+
+        const index = state.list.findIndex(
+          (emp) => emp.id === action.payload.id
         );
 
         if (index !== -1) {
-          s.list[index] = a.payload;
+          state.list[index] = action.payload;
         }
 
-        s.success = "Employee updated successfully";
-      })
-      .addCase(updateEmployee.rejected, (s, a) => {
-        s.error = a.payload;
+        state.success = "Employee updated successfully";
       })
 
-      /* ---------- DELETE ---------- */
-      .addCase(deleteEmployee.fulfilled, (s, a) => {
-        s.list = s.list.filter(
-          (e) => e.id !== a.payload
-        );
-        s.success = "Employee deleted successfully";
+      .addCase(updateEmployee.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
       })
-      .addCase(deleteEmployee.rejected, (s, a) => {
-        s.error = a.payload;
+
+      /* ===== DELETE EMPLOYEE ===== */
+
+      .addCase(deleteEmployee.pending, (state) => {
+        state.loading = true;
+      })
+
+      .addCase(deleteEmployee.fulfilled, (state, action) => {
+        state.loading = false;
+
+        state.list = state.list.filter(
+          (emp) => emp.id !== action.payload
+        );
+
+        state.success = "Employee deleted successfully";
+      })
+
+      .addCase(deleteEmployee.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
       });
   },
 });
 
 export const { clearMessages } = employeeSlice.actions;
+
 export default employeeSlice.reducer;
