@@ -6,9 +6,11 @@ import {
   fetchEmployeeById,
   clearMessages,
 } from "../../features/employees/employeeSlice";
+
 import { fetchCountries } from "../../features/countries/countrySlice";
 import EmployeeForm from "../dumb/EmployeeForm";
 import { useNavigate, useParams } from "react-router-dom";
+
 import {
   Container,
   Typography,
@@ -21,29 +23,44 @@ import {
 } from "@mui/material";
 
 const EmployeeFormContainer = () => {
+
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { id } = useParams();
 
-  const { selected, loading, success, error } = useSelector(
-    (state) => state.employees
-  );
-  const { list: countries } = useSelector((state) => state.countries);
+  const { selected, loading, success, error } =
+    useSelector((state) => state.employees);
+
+  const { list: countries } =
+    useSelector((state) => state.countries);
 
   const [darkMode, setDarkMode] = useState(false);
 
   useEffect(() => {
+
     dispatch(fetchCountries());
-    if (id) dispatch(fetchEmployeeById(id));
+
+    if (id) {
+      dispatch(fetchEmployeeById(id));
+    }
+
   }, [dispatch, id]);
 
   const handleSubmit = async (data) => {
+
+    let result;
+
     if (id) {
-      await dispatch(updateEmployee({ id, data }));
+      result = await dispatch(updateEmployee({ id, data }));
     } else {
-      await dispatch(addEmployee(data));
+      result = await dispatch(addEmployee(data));
     }
-    navigate("/");
+
+    // navigate only after success
+    if (result.meta.requestStatus === "fulfilled") {
+      navigate("/");
+    }
+
   };
 
   const themeStyles = {
@@ -54,35 +71,50 @@ const EmployeeFormContainer = () => {
   };
 
   return (
+
     <Box sx={themeStyles}>
+
       <Container maxWidth="sm">
+
         <Stack
           direction={{ xs: "column", sm: "row" }}
-          justifyContent="space-between"
+          justifyContent="center"
           alignItems="center"
+          color="crimson"
           spacing={2}
           sx={{ mb: 3 }}
         >
-          <Typography variant="h5">{id ? "Edit Employee" : "Add Employee"}</Typography>
+
+          <Typography variant="h5">
+            {id ? "Edit Employee" : "Add Employee"}
+          </Typography>
+
           <FormControlLabel
             control={
               <Switch
                 checked={darkMode}
-                onChange={(e) => setDarkMode(e.target.checked)}
+                onChange={(e) =>
+                  setDarkMode(e.target.checked)
+                }
               />
             }
             label="Dark Mode"
           />
+
         </Stack>
 
         {loading ? (
+
           <CircularProgress />
+
         ) : (
+
           <EmployeeForm
             onSubmit={handleSubmit}
             countries={countries}
             defaultValues={selected}
           />
+
         )}
 
         <Snackbar
@@ -91,9 +123,13 @@ const EmployeeFormContainer = () => {
           message={success || error}
           onClose={() => dispatch(clearMessages())}
         />
+
       </Container>
+
     </Box>
+
   );
+
 };
 
 export default EmployeeFormContainer;

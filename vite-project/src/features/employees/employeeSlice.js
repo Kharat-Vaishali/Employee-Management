@@ -1,3 +1,4 @@
+
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "../../api/axiosInstance";
 
@@ -144,15 +145,16 @@ const employeeSlice = createSlice({
       .addCase(addEmployee.fulfilled, (state, action) => {
         state.loading = false;
 
-        const newEmployee = action.payload;
+        // support both API response formats
+        const newEmployee = action.payload.data || action.payload;
 
-        // Remove duplicate if exists
+        // remove duplicate
         state.list = state.list.filter(
           (emp) => emp.id !== newEmployee.id
         );
 
-        // Add new employee at top
-        state.list = [newEmployee, ...state.list];
+        // add new employee at top
+        state.list.unshift(newEmployee);
 
         state.success = "Employee added successfully";
       })
@@ -171,12 +173,15 @@ const employeeSlice = createSlice({
       .addCase(updateEmployee.fulfilled, (state, action) => {
         state.loading = false;
 
+        const updatedEmployee =
+          action.payload.data || action.payload;
+
         const index = state.list.findIndex(
-          (emp) => emp.id === action.payload.id
+          (emp) => emp.id === updatedEmployee.id
         );
 
         if (index !== -1) {
-          state.list[index] = action.payload;
+          state.list[index] = updatedEmployee;
         }
 
         state.success = "Employee updated successfully";

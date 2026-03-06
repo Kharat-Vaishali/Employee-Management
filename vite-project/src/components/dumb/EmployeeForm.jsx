@@ -6,8 +6,17 @@ import {
   MenuItem,
   Stack,
   Paper,
-  Typography
+  Typography,
+  Box,
+  InputAdornment
 } from "@mui/material";
+
+import PersonIcon from "@mui/icons-material/Person";
+import EmailIcon from "@mui/icons-material/Email";
+import PhoneIcon from "@mui/icons-material/Phone";
+import PublicIcon from "@mui/icons-material/Public";
+import LocationCityIcon from "@mui/icons-material/LocationCity";
+import MapIcon from "@mui/icons-material/Map";
 
 const EmployeeForm = ({ onSubmit, countries = [], defaultValues }) => {
 
@@ -28,126 +37,207 @@ const EmployeeForm = ({ onSubmit, countries = [], defaultValues }) => {
 
   return (
 
-    <Paper
-      elevation={10}
+    <Box
       sx={{
-        p: 4,
-        maxWidth: 420,
-        margin: "auto",
-        borderRadius: 4,
-        background:
-          "linear-gradient(135deg,#ffffff,#f0f7ff)",
-        transition: "0.3s",
-        "&:hover": {
-          transform: "translateY(-5px)",
-          boxShadow: 12
-        }
+        minHeight: "100vh",
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        background: "#f4f6fb"
       }}
     >
 
-      <Typography
-        variant="h5"
-        fontWeight="bold"
-        mb={2}
-        textAlign="center"
+      <Paper
+        elevation={12}
+        sx={{
+          width: 360,
+          borderRadius: 6,
+          overflow: "hidden",
+          background: "#fff"
+        }}
       >
-        Employee Form
-      </Typography>
 
-      <form onSubmit={handleSubmit(onSubmit)}>
+        {/* Top Gradient */}
 
-        <Stack spacing={2}>
+        <Box
+          sx={{
+            height: 120,
+            background:
+              "linear-gradient(135deg,#ff1744,#d50000)",
+            borderBottomLeftRadius: "60% 40%",
+            borderBottomRightRadius: "60% 40%"
+          }}
+        />
 
-          <TextField
-            label="Name"
-            {...register("name", { required: "Name required" })}
-            error={!!errors.name}
-            helperText={errors.name?.message}
-            fullWidth
-          />
+        <Box sx={{ p: 4, mt: -6 }}>
 
-          <TextField
-            label="Email"
-            {...register("email", {
-              required: "Email required",
-              pattern: {
-                value: /^\S+@\S+\.\S+$/,
-                message: "Invalid email",
-              },
-            })}
-            error={!!errors.email}
-            helperText={errors.email?.message}
-            fullWidth
-          />
-
-          <TextField
-            label="Mobile"
-            {...register("mobile", { required: "Mobile required" })}
-            error={!!errors.mobile}
-            helperText={errors.mobile?.message}
-            fullWidth
-          />
-
-          <TextField
-            select
-            label="Country"
-            defaultValue=""
-            {...register("country", { required: "Country required" })}
-            error={!!errors.country}
-            helperText={errors.country?.message}
-            fullWidth
+          <Typography
+            variant="h5"
+            fontWeight="bold"
+            textAlign="center"
+            mb={3}
           >
+            Employee Form
+          </Typography>
 
-            <MenuItem value="">Select Country</MenuItem>
+          <form onSubmit={handleSubmit(onSubmit)}>
 
-            {countries.map((country, index) => (
-              <MenuItem key={index} value={country.name}>
-                {country.name}
-              </MenuItem>
-            ))}
+            <Stack spacing={2}>
 
-          </TextField>
+              <TextField
+                label="Name"
+                size="small"
+                fullWidth
+                {...register("name", { required: "Name required" })}
+                error={!!errors.name}
+                helperText={errors.name?.message}
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <PersonIcon />
+                    </InputAdornment>
+                  )
+                }}
+              />
 
-          <TextField
-            label="State"
-            {...register("state", { required: "State required" })}
-            error={!!errors.state}
-            helperText={errors.state?.message}
-            fullWidth
-          />
+              <TextField
+                label="Email"
+                size="small"
+                fullWidth
+                {...register("email", {
+                  required: "Email required",
+                  pattern: {
+                    value: /^\S+@\S+\.\S+$/,
+                    message: "Invalid email"
+                  }
+                })}
+                error={!!errors.email}
+                helperText={errors.email?.message}
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <EmailIcon />
+                    </InputAdornment>
+                  )
+                }}
+              />
 
-          <TextField
-            label="District"
-            {...register("district", { required: "District required" })}
-            error={!!errors.district}
-            helperText={errors.district?.message}
-            fullWidth
-          />
+              <TextField
+                label="Mobile"
+                size="small"
+                fullWidth
+                {...register("mobile", { required: "Mobile required" })}
+                error={!!errors.mobile}
+                helperText={errors.mobile?.message}
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <PhoneIcon />
+                    </InputAdornment>
+                  )
+                }}
+              />
 
-          <Button
-            variant="contained"
-            type="submit"
-            sx={{
-              mt: 1,
-              py: 1.2,
-              fontWeight: "bold",
-              borderRadius: 3,
-              background:
-                "linear-gradient(90deg,#1976d2,#42a5f5)",
-              "&:hover": {
-                background:
-                  "linear-gradient(90deg,#1565c0,#1e88e5)"
-              }
-            }}
-          >
-            Save Employee
-          </Button>
+              <TextField
+                select
+                label="Country"
+                size="small"
+                fullWidth
+                defaultValue=""
+                {...register("country", { required: "Country required" })}
+                error={!!errors.country}
+                helperText={errors.country?.message}
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <PublicIcon />
+                    </InputAdornment>
+                  )
+                }}
+              >
 
-        </Stack>
+                <MenuItem value="">Select Country</MenuItem>
 
-      </form>
+                {countries.map((country, index) => (
+                  <MenuItem key={index} value={country.name}>
+                    {country.name}
+                  </MenuItem>
+                ))}
 
-    </Paper>
+              </TextField>
+
+              <TextField
+                label="State"
+                size="small"
+                fullWidth
+                {...register("state", { required: "State required" })}
+                error={!!errors.state}
+                helperText={errors.state?.message}
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <LocationCityIcon />
+                    </InputAdornment>
+                  )
+                }}
+              />
+
+              <TextField
+                label="District"
+                size="small"
+                fullWidth
+                {...register("district", { required: "District required" })}
+                error={!!errors.district}
+                helperText={errors.district?.message}
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <MapIcon />
+                    </InputAdornment>
+                  )
+                }}
+              />
+
+              <Button
+                type="submit"
+                variant="contained"
+                sx={{
+                  mt: 2,
+                  borderRadius: 5,
+                  py: 1.2,
+                  background:
+                    "linear-gradient(135deg,#ff1744,#d50000)",
+                  fontWeight: "bold",
+                  "&:hover": {
+                    background:
+                      "linear-gradient(135deg,#d50000,#b71c1c)"
+                  }
+                }}
+              >
+                Save Employee
+              </Button>
+
+            </Stack>
+
+          </form>
+
+        </Box>
+
+        {/* Bottom Wave */}
+
+        <Box
+          sx={{
+            height: 90,
+            background:
+              "linear-gradient(135deg,#ff1744,#d50000)",
+            borderTopLeftRadius: "60% 40%",
+            borderTopRightRadius: "60% 40%"
+          }}
+        />
+
+      </Paper>
+
+    </Box>
   );
 };
 

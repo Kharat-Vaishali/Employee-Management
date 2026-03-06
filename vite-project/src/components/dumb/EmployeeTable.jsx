@@ -1,3 +1,5 @@
+       
+
 import React, { useState, useMemo } from "react";
 import {
   Table,
@@ -28,7 +30,7 @@ const EmployeeTable = ({
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
 
-  const [order, setOrder] = useState("asc");
+  const [order, setOrder] = useState("desc");
   const [orderBy, setOrderBy] = useState("id");
 
   const handleChangePage = (event, newPage) => {
@@ -87,10 +89,12 @@ const EmployeeTable = ({
         <span
           key={index}
           style={{
-            backgroundColor: "#ffe082",
-            padding: "2px 4px",
-            borderRadius: "4px",
-            fontWeight: "bold"
+            backgroundColor: "#fff9c4",
+            color: "#5d4037",
+            padding: "2px 6px",
+            borderRadius: "6px",
+            fontWeight: "bold",
+            boxShadow: "0 0 4px rgba(255,235,59,0.4)"
           }}
         >
           {part}
@@ -104,14 +108,18 @@ const EmployeeTable = ({
   return (
 
     <Paper
-      elevation={10}
+      elevation={12}
       sx={{
         borderRadius: 4,
         mt: 3,
         overflow: "hidden",
         background: darkMode
-          ? "#1e1e1e"
-          : "linear-gradient(145deg,#ffffff,#f0f7ff)"
+          ? "#121212"
+          : "linear-gradient(145deg,#ffffff,#fff5f5)",
+        transition: "0.3s",
+        boxShadow: darkMode
+          ? "0 0 20px rgba(255,0,0,0.2)"
+          : "0 10px 30px rgba(255,0,0,0.15)"
       }}
     >
 
@@ -119,7 +127,12 @@ const EmployeeTable = ({
         <Typography
           variant="h6"
           fontWeight="bold"
-          color={darkMode ? "#fff" : "#000"}
+          sx={{
+            color: darkMode ? "#fff" : "#b71c1c",
+            textShadow: darkMode
+              ? "0 0 6px rgba(255,0,0,0.6)"
+              : "none"
+          }}
         >
           Employee List
         </Typography>
@@ -129,9 +142,8 @@ const EmployeeTable = ({
 
         <TableHead
           sx={{
-            background: darkMode
-              ? "#333"
-              : "linear-gradient(90deg,#1976d2,#42a5f5)"
+            background:
+              "linear-gradient(90deg,#ff1744,#d50000)"
           }}
         >
 
@@ -151,6 +163,12 @@ const EmployeeTable = ({
                   active={orderBy === col}
                   direction={order}
                   onClick={() => handleSort(col)}
+                  sx={{
+                    color:"#fff",
+                    "&.Mui-active": {
+                      color:"#fff"
+                    }
+                  }}
                 >
                   {col.toUpperCase()}
                 </TableSortLabel>
@@ -178,13 +196,19 @@ const EmployeeTable = ({
                 hover
                 sx={{
                   backgroundColor: darkMode ? "#1e1e1e" : "#fff",
+
                   "& td": {
                     color: darkMode ? "#fff" : "#000"
                   },
+
+                  transition:"all 0.25s ease",
+
                   "&:hover": {
                     backgroundColor: darkMode
                       ? "#2a2a2a"
-                      : "#f1f7ff"
+                      : "#fff0f0",
+                    transform:"scale(1.01)",
+                    boxShadow:"0 0 12px rgba(255,0,0,0.2)"
                   }
                 }}
               >
@@ -200,8 +224,15 @@ const EmployeeTable = ({
                   <Tooltip title="Edit">
 
                     <IconButton
-                      color="primary"
                       onClick={() => onEdit(emp.id)}
+                      sx={{
+                        color:"#1976d2",
+                        transition:"0.3s",
+                        "&:hover":{
+                          transform:"scale(1.25)",
+                          boxShadow:"0 0 10px rgba(33,150,243,0.7)"
+                        }
+                      }}
                     >
                       <EditIcon />
                     </IconButton>
@@ -211,8 +242,15 @@ const EmployeeTable = ({
                   <Tooltip title="Delete">
 
                     <IconButton
-                      color="error"
                       onClick={() => onDelete(emp.id)}
+                      sx={{
+                        color:"#d32f2f",
+                        transition:"0.3s",
+                        "&:hover":{
+                          transform:"scale(1.25)",
+                          boxShadow:"0 0 10px rgba(255,0,0,0.7)"
+                        }
+                      }}
                     >
                       <DeleteIcon />
                     </IconButton>
