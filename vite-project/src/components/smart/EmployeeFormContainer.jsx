@@ -1,3 +1,5 @@
+
+
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
@@ -56,7 +58,6 @@ const EmployeeFormContainer = () => {
       result = await dispatch(addEmployee(data));
     }
 
-    // navigate only after success
     if (result.meta.requestStatus === "fulfilled") {
       navigate("/");
     }
@@ -68,6 +69,7 @@ const EmployeeFormContainer = () => {
     color: darkMode ? "#fff" : "#000",
     minHeight: "100vh",
     padding: "20px",
+    transition: "all 0.3s ease"
   };
 
   return (
@@ -80,13 +82,16 @@ const EmployeeFormContainer = () => {
           direction={{ xs: "column", sm: "row" }}
           justifyContent="center"
           alignItems="center"
-          color="crimson"
           spacing={2}
           sx={{ mb: 3 }}
         >
 
-          <Typography variant="h5">
-            {id ? "Edit Employee" : "Add Employee"}
+          <Typography
+            variant="h5"
+            fontWeight="bold"
+            color={darkMode ? "#fff" : "#000"}
+          >
+            {id ? "" : ""}
           </Typography>
 
           <FormControlLabel
@@ -113,6 +118,7 @@ const EmployeeFormContainer = () => {
             onSubmit={handleSubmit}
             countries={countries}
             defaultValues={selected}
+            darkMode={darkMode}
           />
 
         )}

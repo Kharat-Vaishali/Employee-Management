@@ -1,3 +1,5 @@
+
+
 import React, { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import {
@@ -5,7 +7,6 @@ import {
   Button,
   MenuItem,
   Stack,
-  Paper,
   Typography,
   Box,
   InputAdornment
@@ -18,7 +19,7 @@ import PublicIcon from "@mui/icons-material/Public";
 import LocationCityIcon from "@mui/icons-material/LocationCity";
 import MapIcon from "@mui/icons-material/Map";
 
-const EmployeeForm = ({ onSubmit, countries = [], defaultValues }) => {
+const EmployeeForm = ({ onSubmit, countries = [], defaultValues, darkMode }) => {
 
   const {
     register,
@@ -43,46 +44,52 @@ const EmployeeForm = ({ onSubmit, countries = [], defaultValues }) => {
         display: "flex",
         justifyContent: "center",
         alignItems: "center",
-        background: "#f4f6fb"
+        background: darkMode ? "#121212" : "#f4f6fb",
+        color: darkMode ? "#fff" : "#000",
+        transition: "all 0.3s ease"
       }}
     >
 
-      <Paper
-        elevation={12}
+      <Box
         sx={{
           width: 360,
-          borderRadius: 6,
-          overflow: "hidden",
-          background: "#fff"
+          p: 4,
+          borderRadius: 4,
+          background: darkMode ? "#1e1e1e" : "transparent",
+          boxShadow: darkMode
+            ? "0 0 20px rgba(255,0,0,0.2)"
+            : "none"
         }}
       >
 
-        {/* Top Gradient */}
+        {/* TOP RED CURVE */}
 
         <Box
           sx={{
             height: 120,
-            background:
-              "linear-gradient(135deg,#ff1744,#d50000)",
+            background: "linear-gradient(135deg,#ff1744,#d50000)",
             borderBottomLeftRadius: "60% 40%",
             borderBottomRightRadius: "60% 40%"
           }}
         />
 
-        <Box sx={{ p: 4, mt: -6 }}>
+        <Box sx={{ mt: -6 }}>
 
           <Typography
             variant="h5"
             fontWeight="bold"
             textAlign="center"
             mb={3}
+            color={darkMode ? "#fff" : "#000"}
           >
-            Employee Form
+            Add And Edit Form
           </Typography>
 
           <form onSubmit={handleSubmit(onSubmit)}>
 
             <Stack spacing={2}>
+
+              {/* NAME */}
 
               <TextField
                 label="Name"
@@ -98,7 +105,10 @@ const EmployeeForm = ({ onSubmit, countries = [], defaultValues }) => {
                     </InputAdornment>
                   )
                 }}
+                sx={inputStyle(darkMode)}
               />
+
+              {/* EMAIL */}
 
               <TextField
                 label="Email"
@@ -120,13 +130,22 @@ const EmployeeForm = ({ onSubmit, countries = [], defaultValues }) => {
                     </InputAdornment>
                   )
                 }}
+                sx={inputStyle(darkMode)}
               />
+
+              {/* MOBILE WITH VALIDATION */}
 
               <TextField
                 label="Mobile"
                 size="small"
                 fullWidth
-                {...register("mobile", { required: "Mobile required" })}
+                {...register("mobile", {
+                  required: "Mobile number required",
+                  pattern: {
+                    value: /^[0-9]{10}$/,
+                    message: "Mobile number must be 10 digits"
+                  }
+                })}
                 error={!!errors.mobile}
                 helperText={errors.mobile?.message}
                 InputProps={{
@@ -136,7 +155,10 @@ const EmployeeForm = ({ onSubmit, countries = [], defaultValues }) => {
                     </InputAdornment>
                   )
                 }}
+                sx={inputStyle(darkMode)}
               />
+
+              {/* COUNTRY */}
 
               <TextField
                 select
@@ -154,6 +176,7 @@ const EmployeeForm = ({ onSubmit, countries = [], defaultValues }) => {
                     </InputAdornment>
                   )
                 }}
+                sx={inputStyle(darkMode)}
               >
 
                 <MenuItem value="">Select Country</MenuItem>
@@ -165,6 +188,8 @@ const EmployeeForm = ({ onSubmit, countries = [], defaultValues }) => {
                 ))}
 
               </TextField>
+
+              {/* STATE */}
 
               <TextField
                 label="State"
@@ -180,7 +205,10 @@ const EmployeeForm = ({ onSubmit, countries = [], defaultValues }) => {
                     </InputAdornment>
                   )
                 }}
+                sx={inputStyle(darkMode)}
               />
+
+              {/* DISTRICT */}
 
               <TextField
                 label="District"
@@ -196,7 +224,10 @@ const EmployeeForm = ({ onSubmit, countries = [], defaultValues }) => {
                     </InputAdornment>
                   )
                 }}
+                sx={inputStyle(darkMode)}
               />
+
+              {/* SUBMIT BUTTON */}
 
               <Button
                 type="submit"
@@ -223,22 +254,25 @@ const EmployeeForm = ({ onSubmit, countries = [], defaultValues }) => {
 
         </Box>
 
-        {/* Bottom Wave */}
-
-        <Box
-          sx={{
-            height: 90,
-            background:
-              "linear-gradient(135deg,#ff1744,#d50000)",
-            borderTopLeftRadius: "60% 40%",
-            borderTopRightRadius: "60% 40%"
-          }}
-        />
-
-      </Paper>
+      </Box>
 
     </Box>
   );
 };
+
+/* INPUT STYLE FUNCTION */
+
+const inputStyle = (darkMode) => ({
+  "& .MuiOutlinedInput-root": {
+    background: darkMode ? "#2a2a2a" : "#fff",
+    color: darkMode ? "#fff" : "#000",
+    "& fieldset": {
+      borderColor: darkMode ? "#555" : "#ccc"
+    }
+  },
+  "& .MuiInputLabel-root": {
+    color: darkMode ? "#bbb" : "#555"
+  }
+});
 
 export default EmployeeForm;

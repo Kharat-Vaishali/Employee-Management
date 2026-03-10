@@ -1,5 +1,7 @@
        
 
+
+
 import React, { useState, useMemo } from "react";
 import {
   Table,
@@ -13,7 +15,8 @@ import {
   Paper,
   Box,
   Typography,
-  TableSortLabel
+  TableSortLabel,
+  TableContainer
 } from "@mui/material";
 
 import EditIcon from "@mui/icons-material/Edit";
@@ -81,7 +84,6 @@ const EmployeeTable = ({
     if (!searchText) return text;
 
     const regex = new RegExp(`(${searchText})`, "gi");
-
     const parts = text.split(regex);
 
     return parts.map((part, index) =>
@@ -123,11 +125,13 @@ const EmployeeTable = ({
       }}
     >
 
-      <Box sx={{ p: 2 }}>
+      <Box sx={{ p: { xs: 1.5, md: 2 } }}>
+
         <Typography
           variant="h6"
           fontWeight="bold"
           sx={{
+            fontSize: { xs: "16px", md: "20px" },
             color: darkMode ? "#fff" : "#b71c1c",
             textShadow: darkMode
               ? "0 0 6px rgba(255,0,0,0.6)"
@@ -136,152 +140,169 @@ const EmployeeTable = ({
         >
           Employee List
         </Typography>
+
       </Box>
 
-      <Table>
+      {/* RESPONSIVE TABLE CONTAINER */}
 
-        <TableHead
-          sx={{
-            background:
-              "linear-gradient(90deg,#ff1744,#d50000)"
-          }}
-        >
+      <TableContainer sx={{ overflowX: "auto" }}>
 
-          <TableRow>
+        <Table>
 
-            {["id","name","email","mobile","country"].map((col) => (
+          <TableHead
+            sx={{
+              background:
+                "linear-gradient(90deg,#ff1744,#d50000)"
+            }}
+          >
+
+            <TableRow>
+
+              {["id","name","email","mobile","country"].map((col) => (
+
+                <TableCell
+                  key={col}
+                  sx={{
+                    color: "#fff",
+                    fontWeight: "bold",
+                    fontSize:{ xs:"12px", md:"14px" }
+                  }}
+                >
+
+                  <TableSortLabel
+                    active={orderBy === col}
+                    direction={order}
+                    onClick={() => handleSort(col)}
+                    sx={{
+                      color:"#fff",
+                      "&.Mui-active": {
+                        color:"#fff"
+                      }
+                    }}
+                  >
+                    {col.toUpperCase()}
+                  </TableSortLabel>
+
+                </TableCell>
+
+              ))}
 
               <TableCell
-                key={col}
                 sx={{
-                  color: "#fff",
-                  fontWeight: "bold"
+                  color:"#fff",
+                  fontWeight:"bold",
+                  fontSize:{ xs:"12px", md:"14px" }
                 }}
               >
+                Actions
+              </TableCell>
 
-                <TableSortLabel
-                  active={orderBy === col}
-                  direction={order}
-                  onClick={() => handleSort(col)}
+            </TableRow>
+
+          </TableHead>
+
+          <TableBody>
+
+            {paginated.length > 0 ? (
+
+              paginated.map((emp) => (
+
+                <TableRow
+                  key={emp.id}
+                  hover
                   sx={{
-                    color:"#fff",
-                    "&.Mui-active": {
-                      color:"#fff"
+                    backgroundColor: darkMode ? "#1e1e1e" : "#fff",
+
+                    "& td": {
+                      color: darkMode ? "#fff" : "#000",
+                      fontSize:{ xs:"12px", md:"14px" }
+                    },
+
+                    transition:"all 0.25s ease",
+
+                    "&:hover": {
+                      backgroundColor: darkMode
+                        ? "#2a2a2a"
+                        : "#fff0f0",
+                      transform:"scale(1.01)",
+                      boxShadow:"0 0 12px rgba(255,0,0,0.2)"
                     }
                   }}
                 >
-                  {col.toUpperCase()}
-                </TableSortLabel>
 
-              </TableCell>
+                  <TableCell>{highlightText(emp.id)}</TableCell>
+                  <TableCell>{highlightText(emp.name)}</TableCell>
+                  <TableCell>{highlightText(emp.email)}</TableCell>
+                  <TableCell>{emp.mobile}</TableCell>
+                  <TableCell>{emp.country}</TableCell>
 
-            ))}
+                  <TableCell>
 
-            <TableCell sx={{ color:"#fff", fontWeight:"bold" }}>
-              Actions
-            </TableCell>
+                    <Tooltip title="Edit">
 
-          </TableRow>
+                      <IconButton
+                        onClick={() => onEdit(emp.id)}
+                        size="small"
+                        sx={{
+                          color:"#1976d2",
+                          transition:"0.3s",
+                          "&:hover":{
+                            transform:"scale(1.25)",
+                            boxShadow:"0 0 10px rgba(33,150,243,0.7)"
+                          }
+                        }}
+                      >
+                        <EditIcon fontSize="small"/>
+                      </IconButton>
 
-        </TableHead>
+                    </Tooltip>
 
-        <TableBody>
+                    <Tooltip title="Delete">
 
-          {paginated.length > 0 ? (
+                      <IconButton
+                        onClick={() => onDelete(emp.id)}
+                        size="small"
+                        sx={{
+                          color:"#d32f2f",
+                          transition:"0.3s",
+                          "&:hover":{
+                            transform:"scale(1.25)",
+                            boxShadow:"0 0 10px rgba(255,0,0,0.7)"
+                          }
+                        }}
+                      >
+                        <DeleteIcon fontSize="small"/>
+                      </IconButton>
 
-            paginated.map((emp) => (
+                    </Tooltip>
 
-              <TableRow
-                key={emp.id}
-                hover
-                sx={{
-                  backgroundColor: darkMode ? "#1e1e1e" : "#fff",
+                  </TableCell>
 
-                  "& td": {
-                    color: darkMode ? "#fff" : "#000"
-                  },
+                </TableRow>
 
-                  transition:"all 0.25s ease",
+              ))
 
-                  "&:hover": {
-                    backgroundColor: darkMode
-                      ? "#2a2a2a"
-                      : "#fff0f0",
-                    transform:"scale(1.01)",
-                    boxShadow:"0 0 12px rgba(255,0,0,0.2)"
-                  }
-                }}
-              >
+            ) : (
 
-                <TableCell>{highlightText(emp.id)}</TableCell>
-                <TableCell>{highlightText(emp.name)}</TableCell>
-                <TableCell>{highlightText(emp.email)}</TableCell>
-                <TableCell>{emp.mobile}</TableCell>
-                <TableCell>{emp.country}</TableCell>
+              <TableRow>
 
-                <TableCell>
+                <TableCell colSpan={6} align="center">
 
-                  <Tooltip title="Edit">
-
-                    <IconButton
-                      onClick={() => onEdit(emp.id)}
-                      sx={{
-                        color:"#1976d2",
-                        transition:"0.3s",
-                        "&:hover":{
-                          transform:"scale(1.25)",
-                          boxShadow:"0 0 10px rgba(33,150,243,0.7)"
-                        }
-                      }}
-                    >
-                      <EditIcon />
-                    </IconButton>
-
-                  </Tooltip>
-
-                  <Tooltip title="Delete">
-
-                    <IconButton
-                      onClick={() => onDelete(emp.id)}
-                      sx={{
-                        color:"#d32f2f",
-                        transition:"0.3s",
-                        "&:hover":{
-                          transform:"scale(1.25)",
-                          boxShadow:"0 0 10px rgba(255,0,0,0.7)"
-                        }
-                      }}
-                    >
-                      <DeleteIcon />
-                    </IconButton>
-
-                  </Tooltip>
+                  <Typography color={darkMode ? "#fff" : "#000"}>
+                    No Employees Found
+                  </Typography>
 
                 </TableCell>
 
               </TableRow>
 
-            ))
+            )}
 
-          ) : (
+          </TableBody>
 
-            <TableRow>
+        </Table>
 
-              <TableCell colSpan={6} align="center">
-
-                <Typography color={darkMode ? "#fff" : "#000"}>
-                  No Employees Found
-                </Typography>
-
-              </TableCell>
-
-            </TableRow>
-
-          )}
-
-        </TableBody>
-
-      </Table>
+      </TableContainer>
 
       <TablePagination
         component="div"
@@ -292,7 +313,10 @@ const EmployeeTable = ({
         rowsPerPageOptions={[5,10,25]}
         onRowsPerPageChange={handleRowsPerPage}
         sx={{
-          color: darkMode ? "#fff" : "#000"
+          color: darkMode ? "#fff" : "#000",
+          "& .MuiTablePagination-toolbar":{
+            flexWrap:"wrap"
+          }
         }}
       />
 

@@ -187,7 +187,7 @@ const EmployeeContainer = () => {
             }
           }}
         >
-          {darkMode ? "☀ Light Mode" : "🌙 Dark Mode"}
+          {darkMode ? "☀ " : "🌙 "}
         </Button>
 
       </Stack>
@@ -211,7 +211,7 @@ const EmployeeContainer = () => {
           <DialogContentText>
 
             Are you sure you want to delete this employee?
-            This action cannot be undone.
+            
 
           </DialogContentText>
 
