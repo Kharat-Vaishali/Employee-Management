@@ -1,5 +1,3 @@
-
-
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
@@ -114,114 +112,106 @@ const EmployeeContainer = () => {
 
       {/* HEADER */}
 
-      <Box
+      <Typography
+        variant="h4"
+        fontWeight="bold"
         sx={{
-          display:"flex",
-          justifyContent:"space-between",
-          alignItems:"center",
-          mb:3
+          mb:3,
+          background:"linear-gradient(135deg,#ff1744,#d50000)",
+          WebkitBackgroundClip:"text",
+          WebkitTextFillColor:"transparent"
         }}
       >
-
-        <Typography
-          variant="h4"
-          fontWeight="bold"
-          sx={{
-            background:"linear-gradient(135deg,#ff1744,#d50000)",
-            WebkitBackgroundClip:"text",
-            WebkitTextFillColor:"transparent"
-          }}
-        >
-          Employee Management
-        </Typography>
-
-      </Box>
+        Employee Management
+      </Typography>
 
       {/* ACTION BAR */}
 
       <Stack
         direction="row"
-        spacing={2}
+        justifyContent="space-between"
         alignItems="center"
         sx={{ mb: 3 }}
       >
 
-        {/* Add Employee Button */}
+        {/* LEFT SIDE */}
 
-        <Button
-          startIcon={<AddIcon />}
-          variant="contained"
-          onClick={() => navigate("/add", { state: { darkMode } })}
-          sx={{
-            minWidth:170,
-            height:40,
-            background:"linear-gradient(135deg,#ff1744,#d50000)",
-            fontWeight:"bold",
-            borderRadius:2,
-            transition:"all 0.3s ease",
-            boxShadow:"0 6px 15px rgba(255,0,0,0.3)",
-
-            "&:hover":{
-              background:"linear-gradient(135deg,#d50000,#b71c1c)",
-              transform:"translateY(-2px)",
-              boxShadow:"0 10px 25px rgba(255,0,0,0.4)"
-            }
-          }}
+        <Stack
+          direction="row"
+          spacing={2}
+          alignItems="center"
+          sx={{ width:"70%" }}
         >
-          Add Employee
-        </Button>
 
-        {/* Search */}
-
-        <TextField
-          placeholder="Search by ID, Name, Email"
-          size="small"
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          sx={{
-            flex:1,
-            maxWidth:500,
-
-            input:{
-              color: darkMode ? "#fff" : "#000"
-            },
-
-            "& .MuiOutlinedInput-root":{
-              background: darkMode ? "#1f1f1f" : "#fff",
-              borderRadius:2
-            }
-          }}
-
-          InputProps={{
-            startAdornment:(
-              <InputAdornment position="start">
-                <SearchIcon/>
-              </InputAdornment>
-            )
-          }}
-        />
-
-        {/* RIGHT SIDE DARK MODE BUTTON */}
-
-        <Box sx={{ marginLeft: "auto" }}>
-
-          <IconButton
-            onClick={toggleDarkMode}
+          <Button
+            startIcon={<AddIcon />}
+            variant="contained"
+            onClick={() => navigate("/add", { state: { darkMode } })}
             sx={{
-              width:40,
+              minWidth:170,
               height:40,
-              color: darkMode ? "#fff" : "#000",
-              transition:"0.3s",
+              background:"linear-gradient(135deg,#ff1744,#d50000)",
+              fontWeight:"bold",
+              borderRadius:2,
+              transition:"all 0.3s ease",
+              boxShadow:"0 6px 15px rgba(255,0,0,0.3)",
 
               "&:hover":{
-                transform:"scale(1.2)"
+                background:"linear-gradient(135deg,#d50000,#b71c1c)",
+                transform:"translateY(-2px)",
+                boxShadow:"0 10px 25px rgba(255,0,0,0.4)"
               }
             }}
           >
-            {darkMode ? <LightModeIcon/> : <DarkModeIcon/>}
-          </IconButton>
+            Add Employee
+          </Button>
 
-        </Box>
+          <TextField
+            placeholder="Search by ID, Name, Email"
+            size="small"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            sx={{
+              flex:1,
+
+              input:{
+                color: darkMode ? "#fff" : "#000"
+              },
+
+              "& .MuiOutlinedInput-root":{
+                background: darkMode ? "#1f1f1f" : "#fff",
+                borderRadius:2
+              }
+            }}
+
+            InputProps={{
+              startAdornment:(
+                <InputAdornment position="start">
+                  <SearchIcon/>
+                </InputAdornment>
+              )
+            }}
+          />
+
+        </Stack>
+
+        {/* RIGHT SIDE DARK MODE */}
+
+        <IconButton
+          onClick={toggleDarkMode}
+          sx={{
+            width:40,
+            height:40,
+            color: darkMode ? "#fff" : "#000",
+            transition:"0.3s",
+
+            "&:hover":{
+              transform:"scale(1.2)"
+            }
+          }}
+        >
+          {darkMode ? <LightModeIcon/> : <DarkModeIcon/>}
+        </IconButton>
 
       </Stack>
 
