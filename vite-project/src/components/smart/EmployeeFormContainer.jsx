@@ -1,6 +1,6 @@
 
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
   addEmployee,
@@ -11,17 +11,14 @@ import {
 
 import { fetchCountries } from "../../features/countries/countrySlice";
 import EmployeeForm from "../dumb/EmployeeForm";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams, useLocation } from "react-router-dom";
 
 import {
   Container,
-  Typography,
   Snackbar,
   Stack,
   Box,
-  FormControlLabel,
-  Switch,
-  CircularProgress,
+  CircularProgress
 } from "@mui/material";
 
 const EmployeeFormContainer = () => {
@@ -29,6 +26,7 @@ const EmployeeFormContainer = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { id } = useParams();
+  const location = useLocation();
 
   const { selected, loading, success, error } =
     useSelector((state) => state.employees);
@@ -36,7 +34,11 @@ const EmployeeFormContainer = () => {
   const { list: countries } =
     useSelector((state) => state.countries);
 
-  const [darkMode, setDarkMode] = useState(false);
+  /* Dark mode from navigation or localStorage */
+
+  const darkMode =
+    location.state?.darkMode ??
+    localStorage.getItem("darkMode") === "true";
 
   useEffect(() => {
 
@@ -59,7 +61,7 @@ const EmployeeFormContainer = () => {
     }
 
     if (result.meta.requestStatus === "fulfilled") {
-      navigate("/");
+      navigate("/", { state: { darkMode } });
     }
 
   };
@@ -68,8 +70,7 @@ const EmployeeFormContainer = () => {
     backgroundColor: darkMode ? "#121212" : "#f5f5f5",
     color: darkMode ? "#fff" : "#000",
     minHeight: "100vh",
-    padding: "20px",
-    transition: "all 0.3s ease"
+    padding: "20px"
   };
 
   return (
@@ -78,35 +79,7 @@ const EmployeeFormContainer = () => {
 
       <Container maxWidth="sm">
 
-        <Stack
-          direction={{ xs: "column", sm: "row" }}
-          justifyContent="center"
-          alignItems="center"
-          spacing={2}
-          sx={{ mb: 3 }}
-        >
-
-          <Typography
-            variant="h5"
-            fontWeight="bold"
-            color={darkMode ? "#fff" : "#000"}
-          >
-            {id ? "" : ""}
-          </Typography>
-
-          <FormControlLabel
-            control={
-              <Switch
-                checked={darkMode}
-                onChange={(e) =>
-                  setDarkMode(e.target.checked)
-                }
-              />
-            }
-            label="Dark Mode"
-          />
-
-        </Stack>
+        <Stack sx={{ mb: 3 }} />
 
         {loading ? (
 

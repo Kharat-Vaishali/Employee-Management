@@ -35,7 +35,12 @@ const EmployeeContainer = () => {
     useSelector((state) => state.employees);
 
   const [search, setSearch] = useState("");
-  const [darkMode, setDarkMode] = useState(false);
+
+  /* Dark mode from localStorage */
+
+  const [darkMode, setDarkMode] = useState(
+    localStorage.getItem("darkMode") === "true"
+  );
 
   const [openDialog, setOpenDialog] = useState(false);
   const [deleteId, setDeleteId] = useState(null);
@@ -81,6 +86,14 @@ const EmployeeContainer = () => {
 
   };
 
+  /* Dark Mode Toggle */
+
+  const toggleDarkMode = () => {
+    const newMode = !darkMode;
+    setDarkMode(newMode);
+    localStorage.setItem("darkMode", newMode);
+  };
+
   return (
 
     <Container
@@ -106,26 +119,11 @@ const EmployeeContainer = () => {
         sx={{ mb: 3 }}
       >
 
-        {/* Add Employee Button */}
+        {/* Add Employee */}
 
         <Button
           variant="contained"
-          onClick={() => navigate("/add")}
-          sx={{
-            minWidth: 150,
-            fontWeight: "bold",
-            borderRadius: 3,
-            background: "linear-gradient(135deg,#ff1744,#d50000)",
-            boxShadow: "0 6px 15px rgba(255,0,0,0.4)",
-            transform: "translateY(0)",
-            transition: "all 0.3s ease",
-
-            "&:hover": {
-              background: "linear-gradient(135deg,#d50000,#b71c1c)",
-              transform: "translateY(-3px)",
-              boxShadow: "0 10px 25px rgba(255,0,0,0.5)"
-            }
-          }}
+          onClick={() => navigate("/add", { state: { darkMode } })}
         >
           Add Employee
         </Button>
@@ -139,55 +137,19 @@ const EmployeeContainer = () => {
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           sx={{
-
             input: {
               color: darkMode ? "#fff" : "#000"
-            },
-
-            "& .MuiOutlinedInput-root": {
-
-              "& fieldset": {
-                borderColor: darkMode ? "#666" : "#ccc"
-              },
-
-              "&:hover fieldset": {
-                borderColor: darkMode ? "#aaa" : "#1976d2"
-              }
-
-            },
-
-            "& .MuiInputBase-input::placeholder": {
-              color: darkMode ? "#bbb" : "#555",
-              opacity: 1
             }
-
           }}
         />
 
-        {/* Dark Mode Button */}
+        {/* Dark Mode Toggle */}
 
         <Button
           variant="outlined"
-          onClick={() => setDarkMode(!darkMode)}
-          sx={{
-            minWidth: 150,
-            fontWeight: "bold",
-            borderRadius: 3,
-            borderColor: "#d50000",
-            color: "#d50000",
-            boxShadow: "0 4px 10px rgba(255,0,0,0.2)",
-            transition: "all 0.3s ease",
-
-            "&:hover": {
-              background: "linear-gradient(135deg,#ff1744,#d50000)",
-              color: "#fff",
-              borderColor: "#d50000",
-              transform: "translateY(-2px)",
-              boxShadow: "0 8px 20px rgba(255,0,0,0.4)"
-            }
-          }}
+          onClick={toggleDarkMode}
         >
-          {darkMode ? "☀ " : "🌙 "}
+          {darkMode ? "☀" : "🌙"}
         </Button>
 
       </Stack>
@@ -196,9 +158,11 @@ const EmployeeContainer = () => {
         employees={filteredEmployees}
         searchText={search}
         darkMode={darkMode}
-        onEdit={(id) => navigate(`/edit/${id}`)}
+        onEdit={(id) => navigate(`/edit/${id}`, { state: { darkMode } })}
         onDelete={handleDelete}
       />
+
+      {/* Delete Dialog */}
 
       <Dialog open={openDialog} onClose={cancelDelete}>
 
@@ -209,10 +173,7 @@ const EmployeeContainer = () => {
         <DialogContent>
 
           <DialogContentText>
-
             Are you sure you want to delete this employee?
-            
-
           </DialogContentText>
 
         </DialogContent>
