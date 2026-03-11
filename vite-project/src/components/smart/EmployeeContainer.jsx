@@ -21,8 +21,16 @@ import {
   DialogTitle,
   DialogContent,
   DialogContentText,
-  DialogActions
+  DialogActions,
+  IconButton,
+  Box,
+  InputAdornment
 } from "@mui/material";
+
+import DarkModeIcon from "@mui/icons-material/DarkMode";
+import LightModeIcon from "@mui/icons-material/LightMode";
+import AddIcon from "@mui/icons-material/Add";
+import SearchIcon from "@mui/icons-material/Search";
 
 import { useNavigate } from "react-router-dom";
 
@@ -35,8 +43,6 @@ const EmployeeContainer = () => {
     useSelector((state) => state.employees);
 
   const [search, setSearch] = useState("");
-
-  /* Dark mode from localStorage */
 
   const [darkMode, setDarkMode] = useState(
     localStorage.getItem("darkMode") === "true"
@@ -86,8 +92,6 @@ const EmployeeContainer = () => {
 
   };
 
-  /* Dark Mode Toggle */
-
   const toggleDarkMode = () => {
     const newMode = !darkMode;
     setDarkMode(newMode);
@@ -97,33 +101,72 @@ const EmployeeContainer = () => {
   return (
 
     <Container
+      maxWidth={false}
       sx={{
+        width: "100%",
         backgroundColor: darkMode ? "#121212" : "#f5f5f5",
         color: darkMode ? "#ffffff" : "#000000",
         minHeight: "100vh",
         padding: { xs: 2, sm: 3 },
-        transition: "all 0.4s ease"
+        transition: "all 0.3s ease"
       }}
     >
 
-      <Typography
-        variant="h4"
-        sx={{ mb: 3, fontWeight: "bold" }}
+      {/* HEADER */}
+
+      <Box
+        sx={{
+          display:"flex",
+          justifyContent:"space-between",
+          alignItems:"center",
+          mb:3
+        }}
       >
-        Employee Management
-      </Typography>
+
+        <Typography
+          variant="h4"
+          fontWeight="bold"
+          sx={{
+            background:"linear-gradient(135deg,#ff1744,#d50000)",
+            WebkitBackgroundClip:"text",
+            WebkitTextFillColor:"transparent"
+          }}
+        >
+          Employee Management
+        </Typography>
+
+      </Box>
+
+      {/* ACTION BAR */}
 
       <Stack
-        direction={{ xs: "column", sm: "row" }}
+        direction="row"
         spacing={2}
+        alignItems="center"
         sx={{ mb: 3 }}
       >
 
-        {/* Add Employee */}
+        {/* Add Employee Button */}
 
         <Button
+          startIcon={<AddIcon />}
           variant="contained"
           onClick={() => navigate("/add", { state: { darkMode } })}
+          sx={{
+            minWidth:170,
+            height:40,
+            background:"linear-gradient(135deg,#ff1744,#d50000)",
+            fontWeight:"bold",
+            borderRadius:2,
+            transition:"all 0.3s ease",
+            boxShadow:"0 6px 15px rgba(255,0,0,0.3)",
+
+            "&:hover":{
+              background:"linear-gradient(135deg,#d50000,#b71c1c)",
+              transform:"translateY(-2px)",
+              boxShadow:"0 10px 25px rgba(255,0,0,0.4)"
+            }
+          }}
         >
           Add Employee
         </Button>
@@ -133,26 +176,56 @@ const EmployeeContainer = () => {
         <TextField
           placeholder="Search by ID, Name, Email"
           size="small"
-          fullWidth
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           sx={{
-            input: {
+            flex:1,
+            maxWidth:500,
+
+            input:{
               color: darkMode ? "#fff" : "#000"
+            },
+
+            "& .MuiOutlinedInput-root":{
+              background: darkMode ? "#1f1f1f" : "#fff",
+              borderRadius:2
             }
+          }}
+
+          InputProps={{
+            startAdornment:(
+              <InputAdornment position="start">
+                <SearchIcon/>
+              </InputAdornment>
+            )
           }}
         />
 
-        {/* Dark Mode Toggle */}
+        {/* RIGHT SIDE DARK MODE BUTTON */}
 
-        <Button
-          variant="outlined"
-          onClick={toggleDarkMode}
-        >
-          {darkMode ? "☀" : "🌙"}
-        </Button>
+        <Box sx={{ marginLeft: "auto" }}>
+
+          <IconButton
+            onClick={toggleDarkMode}
+            sx={{
+              width:40,
+              height:40,
+              color: darkMode ? "#fff" : "#000",
+              transition:"0.3s",
+
+              "&:hover":{
+                transform:"scale(1.2)"
+              }
+            }}
+          >
+            {darkMode ? <LightModeIcon/> : <DarkModeIcon/>}
+          </IconButton>
+
+        </Box>
 
       </Stack>
+
+      {/* TABLE */}
 
       <EmployeeTable
         employees={filteredEmployees}
@@ -162,7 +235,7 @@ const EmployeeContainer = () => {
         onDelete={handleDelete}
       />
 
-      {/* Delete Dialog */}
+      {/* DELETE DIALOG */}
 
       <Dialog open={openDialog} onClose={cancelDelete}>
 
@@ -209,6 +282,7 @@ const EmployeeContainer = () => {
     </Container>
 
   );
+
 };
 
 export default EmployeeContainer;

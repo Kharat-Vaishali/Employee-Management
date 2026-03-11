@@ -30,6 +30,10 @@ const EmployeeForm = ({ onSubmit, countries = [], defaultValues, darkMode }) => 
     defaultValues: defaultValues || {},
   });
 
+  /* Detect Add or Edit */
+
+  const isEdit = defaultValues && defaultValues.id;
+
   useEffect(() => {
     if (defaultValues) {
       reset(defaultValues);
@@ -75,6 +79,8 @@ const EmployeeForm = ({ onSubmit, countries = [], defaultValues, darkMode }) => 
 
         <Box sx={{ mt: -6 }}>
 
+          {/* Dynamic Title */}
+
           <Typography
             variant="h5"
             fontWeight="bold"
@@ -82,7 +88,7 @@ const EmployeeForm = ({ onSubmit, countries = [], defaultValues, darkMode }) => 
             mb={3}
             color={darkMode ? "#fff" : "#000"}
           >
-            Add And Edit Form
+            {isEdit ? "Edit Employee" : " Employee Details"}
           </Typography>
 
           <form onSubmit={handleSubmit(onSubmit)}>
@@ -133,7 +139,7 @@ const EmployeeForm = ({ onSubmit, countries = [], defaultValues, darkMode }) => 
                 sx={inputStyle(darkMode)}
               />
 
-              {/* MOBILE WITH VALIDATION */}
+              {/* MOBILE */}
 
               <TextField
                 label="Mobile"
@@ -259,8 +265,6 @@ const EmployeeForm = ({ onSubmit, countries = [], defaultValues, darkMode }) => 
     </Box>
   );
 };
-
-/* INPUT STYLE FUNCTION */
 
 const inputStyle = (darkMode) => ({
   "& .MuiOutlinedInput-root": {
